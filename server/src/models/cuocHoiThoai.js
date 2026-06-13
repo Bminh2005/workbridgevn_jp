@@ -14,7 +14,13 @@ class CuocHoiThoai extends BaseModel {
         cuoc_hoi_thoai (
           ma_cuoc_hoi_thoai,
           ten_cuoc_hoi_thoai,
-          ngay_tao
+          ngay_tao,
+          thanhvienhoithoai (
+            nguoi_dung (
+              ma_nguoi_dung,
+              ten
+            )
+          )
         )
       `)
       .eq('ma_nguoi_dung', maNguoiDung);

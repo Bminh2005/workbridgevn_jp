@@ -34,8 +34,24 @@ const getConversations = async (req, res) => {
 
         const translatedText = lastMessageData?.bandich?.[0]?.noi_dung_da_dich || lastMessageData?.ban_dich?.[0]?.noi_dung_da_dich;
         
+        // Hiển thị tên cuộc hội thoại động dựa trên người dùng hiện tại
+        let dynamicName = conv.ten_cuoc_hoi_thoai;
+        if (dynamicName && dynamicName.startsWith('Đoạn chat ')) {
+          if (conv.thanhvienhoithoai) {
+            const otherMembers = conv.thanhvienhoithoai
+              .filter(tv => tv.nguoi_dung && tv.nguoi_dung.ma_nguoi_dung !== userId)
+              .map(tv => tv.nguoi_dung);
+            
+            if (otherMembers.length > 0) {
+              const otherNames = otherMembers.map(m => m.ten).join(', ');
+              dynamicName = `Đoạn chat cùng với ${otherNames}`;
+            }
+          }
+        }
+        
         return {
           ...conv,
+          ten_cuoc_hoi_thoai: dynamicName,
           lastMessage: lastMessageData ? (translatedText || lastMessageData.noi_dung) : null,
           lastMessageTime: lastMessageData ? lastMessageData.time : conv.ngay_tao,
           unreadCount: unreadCount || 0
