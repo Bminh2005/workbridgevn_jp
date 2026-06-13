@@ -36,6 +36,7 @@ function translateCategory(category: string, language: "ja" | "vi"): string {
     "依頼返信": { ja: "依頼返信", vi: "Trả lời yêu cầu" },
     "完了返信": { ja: "完了返信", vi: "Trả lời hoàn thành" },
     "報告返信": { ja: "報告返信", vi: "Trả lời báo cáo" },
+    "提案": { ja: "提案", vi: "Đề xuất" },
   };
 
   return categoryMap[category]?.[language] || category;

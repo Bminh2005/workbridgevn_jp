@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+﻿import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -136,37 +136,7 @@ const suggestionDatabase = [
     translation: "Tôi rất mong bạn có thể xem xét.",
     category: "依頼",
   },
-  {
-    id: "s7",
-    keyword: "すみません",
-    text: "申し訳ございません。すぐに対応いたします。",
-    translation: "Xin lỗi. Tôi sẽ xử lý ngay.",
-    category: "謝罪",
-  },
-  {
-    id: "s8",
-    keyword: "時間",
-    text: "お時間をいただけますでしょうか？",
-    translation: "Bạn có thể dành chút thời gian không?",
-    category: "依頼",
-  },
-  {
-    id: "s9",
-    keyword: "完了",
-    text: "作業が完了しましたので、ご報告いたします。",
-    translation: "Công việc đã hoàn tất nên tôi báo cáo với bạn.",
-    category: "報告",
-  },
-  {
-    id: "s10",
-    keyword: "お疲れ",
-    text: "お疲れ様でした。本日もありがとうございました。",
-    translation: "Otsukaresama deshita. Cảm ơn vì hôm nay.",
-    category: "挨拶",
-  },
 ];
-
-// Reply suggestions based on received message context
 const replySuggestions = [
   // Greeting responses
   {
@@ -175,7 +145,10 @@ const replySuggestions = [
     text: "おはようございます！お疲れ様です。",
     translation: "Chào buổi sáng! Chúc bạn làm việc tốt.",
     category: "挨拶返信",
-    context: "Phản hồi lời chào theo văn hóa Nhật",
+    context: {
+      ja: "日本文化における挨拶への返答",
+      vi: "Phản hồi lời chào theo văn hóa Nhật",
+    },
   },
   // Thank you responses
   {
@@ -184,7 +157,10 @@ const replySuggestions = [
     text: "どういたしまして。また何かありましたら、お気軽にお声がけください。",
     translation: "Không có gì. Nếu có gì vui lòng cứ nhắn tin cho tôi.",
     category: "返信",
-    context: "Phản hồi lời cảm ơn một cách lịch sự",
+    context: {
+      ja: "丁寧な感謝への返答",
+      vi: "Phản hồi lời cảm ơn một cách lịch sự",
+    },
   },
   {
     id: "r3",
@@ -192,7 +168,10 @@ const replySuggestions = [
     text: "いえいえ、こちらこそありがとうございます。",
     translation: "Không sao, tôi mới là người cần cảm ơn.",
     category: "返信",
-    context: "Cách trả lời khiêm tốn theo văn hóa Nhật",
+    context: {
+      ja: "日本文化における謙虚な返答",
+      vi: "Cách trả lời khiêm tốn theo văn hóa Nhật",
+    },
   },
   // Confirmation responses
   {
@@ -201,7 +180,10 @@ const replySuggestions = [
     text: "はい、確認いたしました。問題ありません。",
     translation: "Vâng, tôi đã xác nhận. Không có vấn đề gì.",
     category: "確認返信",
-    context: "Xác nhận đã kiểm tra",
+    context: {
+      ja: "確認完了の返答",
+      vi: "Xác nhận đã kiểm tra",
+    },
   },
   {
     id: "r5",
@@ -209,7 +191,10 @@ const replySuggestions = [
     text: "承知いたしました。すぐに確認させていただきます。",
     translation: "Tôi hiểu rồi. Tôi sẽ kiểm tra ngay.",
     category: "確認返信",
-    context: "Phản hồi yêu cầu kiểm tra",
+    context: {
+      ja: "確認依頼への返答",
+      vi: "Phản hồi yêu cầu kiểm tra",
+    },
   },
   // Meeting/Schedule responses
   {
@@ -218,7 +203,10 @@ const replySuggestions = [
     text: "承知いたしました。会議室で お待ちしております。",
     translation: "Tôi hiểu rồi. Tôi sẽ đợi tại phòng họp.",
     category: "予定返信",
-    context: "Xác nhận lịch họp",
+    context: {
+      ja: "会議予定の確認",
+      vi: "Xác nhận lịch họp",
+    },
   },
   {
     id: "r7",
@@ -226,7 +214,10 @@ const replySuggestions = [
     text: "はい、10時からですね。よろしくお願いいたします。",
     translation: "Vâng, từ 10 giờ đúng không. Rất mong được hợp tác.",
     category: "予定返信",
-    context: "Xác nhận thời gian",
+    context: {
+      ja: "時間の確認",
+      vi: "Xác nhận thời gian",
+    },
   },
   // Document/Work responses
   {
@@ -235,7 +226,10 @@ const replySuggestions = [
     text: "資料を確認させていただきました。ご共有ありがとうございます。",
     translation: "Tôi đã xem tài liệu. Cảm ơn bạn đã chia sẻ.",
     category: "業務返信",
-    context: "Phản hồi khi nhận tài liệu",
+    context: {
+      ja: "資料受領の返答",
+      vi: "Phản hồi khi nhận tài liệu",
+    },
   },
   {
     id: "r9",
@@ -243,7 +237,10 @@ const replySuggestions = [
     text: "はい、資料は準備できております。送信いたします。",
     translation: "Vâng, tài liệu đã chuẩn bị xong. Tôi sẽ gửi.",
     category: "業務返信",
-    context: "Phản hồi về việc chuẩn bị tài liệu",
+    context: {
+      ja: "資料準備の返答",
+      vi: "Phản hồi về việc chuẩn bị tài liệu",
+    },
   },
   // Apology responses
   {
@@ -252,7 +249,10 @@ const replySuggestions = [
     text: "大丈夫です。お気になさらないでください。",
     translation: "Không sao. Đừng lo lắng.",
     category: "返信",
-    context: "Phản hồi lời xin lỗi",
+    context: {
+      ja: "謝罪への返答",
+      vi: "Phản hồi lời xin lỗi",
+    },
   },
   // Request responses
   {
@@ -261,7 +261,10 @@ const replySuggestions = [
     text: "承知いたしました。対応させていただきます。",
     translation: "Tôi hiểu rồi. Tôi sẽ xử lý.",
     category: "依頼返信",
-    context: "Chấp nhận yêu cầu",
+    context: {
+      ja: "依頼の承諾",
+      vi: "Chấp nhận yêu cầu",
+    },
   },
   {
     id: "r12",
@@ -269,7 +272,10 @@ const replySuggestions = [
     text: "はい、こちらこそよろしくお願いいたします。",
     translation: "Vâng, tôi cũng rất mong được hợp tác.",
     category: "依頼返信",
-    context: "Đáp lại lời nhờ vả",
+    context: {
+      ja: "依頼への返答",
+      vi: "Đáp lại lời nhờ vả",
+    },
   },
   // Completion/Report responses
   {
@@ -278,7 +284,10 @@ const replySuggestions = [
     text: "お疲れ様でした。ありがとうございます。",
     translation: "Cảm ơn bạn đã cố gắng. Cảm ơn bạn.",
     category: "完了返信",
-    context: "Phản hồi khi công việc hoàn thành",
+    context: {
+      ja: "業務完了への返答",
+      vi: "Phản hồi khi công việc hoàn thành",
+    },
   },
   {
     id: "r14",
@@ -286,32 +295,12 @@ const replySuggestions = [
     text: "ご報告ありがとうございます。確認いたしました。",
     translation: "Cảm ơn báo cáo. Tôi đã xác nhận.",
     category: "報告返信",
-    context: "Phản hồi báo cáo",
+    context: {
+      ja: "報告への返答",
+      vi: "Phản hồi báo cáo",
+    },
   },
 ];
-
-// Function to translate category names
-function translateCategory(category: string, language: "ja" | "vi"): string {
-  const categoryMap: Record<string, { ja: string; vi: string }> = {
-    "挨拶": { ja: "挨拶", vi: "Chào hỏi" },
-    "感謝": { ja: "感謝", vi: "Cảm ơn" },
-    "確認": { ja: "確認", vi: "Xác nhận" },
-    "業務": { ja: "業務", vi: "Công việc" },
-    "依頼": { ja: "依頼", vi: "Yêu cầu" },
-    "謝罪": { ja: "謝罪", vi: "Xin lỗi" },
-    "報告": { ja: "報告", vi: "Báo cáo" },
-    "挨拶返信": { ja: "挨拶返信", vi: "Trả lời chào" },
-    "返信": { ja: "返信", vi: "Trả lời" },
-    "確認返信": { ja: "確認返信", vi: "Trả lời xác nhận" },
-    "予定返信": { ja: "予定返信", vi: "Trả lời lịch" },
-    "業務返信": { ja: "業務返信", vi: "Trả lời công việc" },
-    "依頼返信": { ja: "依頼返信", vi: "Trả lời yêu cầu" },
-    "完了返信": { ja: "完了返信", vi: "Trả lời hoàn thành" },
-    "報告返信": { ja: "報告返信", vi: "Trả lời báo cáo" },
-  };
-
-  return categoryMap[category]?.[language] || category;
-}
 
 // Function to get culturally appropriate translation
 function getCulturalTranslation(
@@ -456,7 +445,7 @@ export function ChatPage() {
   >(null);
   const [suggestions, setSuggestions] = useState<typeof suggestionDatabase>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [replySuggestionsState, setReplySuggestionsState] = useState<typeof replySuggestions>([]);
+  const [replySuggestionsState, setReplySuggestionsState] = useState<any[]>([]);
   const [showSidebar, setShowSidebar] = useState(true);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -620,15 +609,28 @@ export function ChatPage() {
           text: s.jpText,
           translation: s.viText,
           category: "提案",
-          context: `関連性スコア: ${s.score}/3 | Điểm liên quan: ${s.score}/3`,
+          context: language === "ja" ? `関連性スコア: ${s.score}/3` : `Điểm liên quan: ${s.score}/3`,
         }));
         setReplySuggestionsState(convertedSuggestions);
       } else {
-        // Fallback to empty if no suggestions from AI yet
-        setReplySuggestionsState([]);
+        // Fallback to local suggestions that match the message triggers
+        const textToMatch = lastReceivedMessage.text.toLowerCase();
+        const matched = replySuggestions
+          .filter((rs) =>
+            rs.triggers.some((trigger) => textToMatch.includes(trigger.toLowerCase()))
+          )
+          .map((rs) => ({
+            id: rs.id,
+            triggers: rs.triggers,
+            text: rs.text,
+            translation: rs.translation,
+            category: rs.category,
+            context: language === "ja" ? rs.context.ja : rs.context.vi,
+          }));
+        setReplySuggestionsState(matched);
       }
     }
-  }, [messages]);
+  }, [messages, language]);
 
   const handleSelectSuggestion = (suggestion: typeof suggestionDatabase[0]) => {
     setNewMessage(suggestion.text);
