@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -423,12 +423,22 @@ export function ChatPage() {
     
     if (name.startsWith(prefixJa)) {
       const members = name.substring(prefixJa.length);
-      return t(`会話：${members}`, `Đoạn chat cùng với ${members}`);
+      return (
+        <>
+          {t("会話：", "Đoạn chat cùng với ")}
+          <span translate="no" className="notranslate">{members}</span>
+        </>
+      );
     } else if (name.startsWith(prefixVi)) {
       const members = name.substring(prefixVi.length);
-      return t(`会話：${members}`, `Đoạn chat cùng với ${members}`);
+      return (
+        <>
+          {t("会話：", "Đoạn chat cùng với ")}
+          <span translate="no" className="notranslate">{members}</span>
+        </>
+      );
     }
-    return name;
+    return <span translate="no" className="notranslate">{name}</span>;
   };
 
   const { contactId } = useParams();

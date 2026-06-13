@@ -38,12 +38,22 @@ export function ChatListPage() {
     
     if (name.startsWith(prefixJa)) {
       const members = name.substring(prefixJa.length);
-      return t(`会話：${members}`, `Đoạn chat cùng với ${members}`);
+      return (
+        <>
+          {t("会話：", "Đoạn chat cùng với ")}
+          <span translate="no" className="notranslate">{members}</span>
+        </>
+      );
     } else if (name.startsWith(prefixVi)) {
       const members = name.substring(prefixVi.length);
-      return t(`会話：${members}`, `Đoạn chat cùng với ${members}`);
+      return (
+        <>
+          {t("会話：", "Đoạn chat cùng với ")}
+          <span translate="no" className="notranslate">{members}</span>
+        </>
+      );
     }
-    return name;
+    return <span translate="no" className="notranslate">{name}</span>;
   };
   const [showNewConversation, setShowNewConversation] = useState(false);
   const [contacts, setContacts] = useState<Contact[]>([]);
