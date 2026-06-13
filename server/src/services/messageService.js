@@ -1,7 +1,7 @@
 const supabase = require('../config/supabase');
 const tinNhan = require('../models/tinnhan');
 const banDich = require('../models/bandich');
-const phanTichYNghia = require('../models/phantichynghia');
+const phanTichYNghia = require('../models/phanTichYNghia');
 const { analyzeMessage } = require('./aiService');
 const { translateText } = require('./googleTranslateService');
 
@@ -25,9 +25,9 @@ async function xuLyTinNhanMoi({ noi_dung, ma_cuoc_hoi_thoai, ma_nguoi_gui }, io)
   // 1.5. Tự động phát hiện ngôn ngữ nhắn và dịch siêu tốc
   const ngonNguGoc = detectLanguage(noi_dung);
   const ngonNguDich = ngonNguGoc === 'vi' ? 'ja' : 'vi';
-  
+
   const noiDungDaDich = await translateText(noi_dung, ngonNguGoc, ngonNguDich);
-  
+
   // Lưu bản dịch vào DB ngay lập tức
   await banDich.create({
     maTinNhan: tinNhanMoi.ma_tin_nhan,
@@ -65,7 +65,7 @@ async function _xuLyAI(maTinNhan, noiDung, ngonNguGoc, maCuocHoiThoai, io, chatH
       tomTatYDinh: yDinhJson,
       danhSachGoiY: aiData.goi_y,
     });
-    
+
     io.to(maCuocHoiThoai).emit('message_ai_ready', {
       ma_tin_nhan: maTinNhan,
       ngu_canh: { vi: aiData.ngu_canh_vi, ja: aiData.ngu_canh_ja },
