@@ -19,7 +19,7 @@ interface SuggestionSidebarProps {
 }
 
 // Function to translate category names
-function translateCategory(category: string, language: "ja" | "vi"): string {
+export function translateCategory(category: string, language: "ja" | "vi"): string {
   const categoryMap: Record<string, { ja: string; vi: string }> = {
     "挨拶": { ja: "挨拶", vi: "Chào hỏi" },
     "感謝": { ja: "感謝", vi: "Cảm ơn" },

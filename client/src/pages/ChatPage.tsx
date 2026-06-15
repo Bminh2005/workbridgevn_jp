@@ -20,7 +20,7 @@ import {
   Download,
 } from "lucide-react";
 import { MessageIntentDialog } from "../components/chat/MessageIntentDialog";
-import { SuggestionSidebar } from "../components/chat/SuggestionSidebar";
+import { SuggestionSidebar, translateCategory } from "../components/chat/SuggestionSidebar";
 import { useLanguage } from "../utils/contexts/LanguageContext";
 import { useAuth } from "../utils/contexts/AuthContext";
 import { chatApi } from "../api/chatApi";
@@ -320,14 +320,14 @@ function getCulturalTranslation(
       "ありがとうございます": "Cảm ơn bạn rất nhiều",
       "どういたしまして": "Không có gì (đáp lại lời cảm ơn)",
     };
-    
+
     for (const [jp, vn] of Object.entries(translations)) {
       if (text.includes(jp)) {
         return text.replace(jp, vn);
       }
     }
   }
-  
+
   // If sender is Vietnamese and receiver is Japanese
   if (senderNationality === "vietnam" && receiverNationality === "japan") {
     // Add Japanese cultural politeness
@@ -338,14 +338,14 @@ function getCulturalTranslation(
       "Được": "承知いたしました (敬意を表す確認)",
       "Tôi理解": "承知いたしました、理解しております",
     };
-    
+
     for (const [vn, jp] of Object.entries(translations)) {
       if (text.includes(vn)) {
         return text.replace(vn, jp);
       }
     }
   }
-  
+
   return "Dịch tự động: " + text;
 }
 
@@ -415,12 +415,12 @@ const allContacts = [
 
 export function ChatPage() {
   const { t, language } = useLanguage();
-  
+
   const formatConversationName = (name: string) => {
     if (!name) return "";
     const prefixJa = "会話：";
     const prefixVi = "Đoạn chat cùng với ";
-    
+
     if (name.startsWith(prefixJa)) {
       const members = name.substring(prefixJa.length);
       return (
@@ -523,7 +523,7 @@ export function ChatPage() {
             jpText: s.tieng_nhat || s.noi_dung_tieng_nhat,
             score: s.muc_do || s.muc_do_phu_hop || 3,
           })) || [];
-          
+
           return {
             ...m,
             intent: aiUpdate.tom_tat_y_dinh,
@@ -573,14 +573,14 @@ export function ChatPage() {
 
   // Check if this is a group chat
   const isGroupChat = contactId?.startsWith("group-");
-  
+
   // Get group members if it's a group chat
   const groupMembers = (isGroupChat
     ? contactId
-        ?.replace("group-", "")
-        .split("-")
-        .map((id) => allContacts.find((c) => c.id === id))
-        .filter(Boolean)
+      ?.replace("group-", "")
+      .split("-")
+      .map((id) => allContacts.find((c) => c.id === id))
+      .filter(Boolean)
     : []) || [];
 
 
@@ -609,7 +609,7 @@ export function ChatPage() {
     const lastReceivedMessage = [...messages]
       .reverse()
       .find((m) => m.sender === "other");
-    
+
     if (lastReceivedMessage) {
       if (lastReceivedMessage.suggestions && lastReceivedMessage.suggestions.length > 0) {
         // Convert DB suggestions to replySuggestions format
@@ -727,9 +727,8 @@ export function ChatPage() {
                 {groupMembers.slice(0, 3).map((member, index) => (
                   <Avatar
                     key={member?.id}
-                    className={`w-10 h-10 border-2 border-white ${
-                      index > 0 ? "-ml-3" : ""
-                    }`}
+                    className={`w-10 h-10 border-2 border-white ${index > 0 ? "-ml-3" : ""
+                      }`}
                     style={{ zIndex: 3 - index }}
                   >
                     <AvatarImage src={member?.avatar} />
@@ -814,32 +813,28 @@ export function ChatPage() {
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`flex ${
-                message.sender === "me" ? "justify-end" : "justify-start"
-              }`}
+              className={`flex ${message.sender === "me" ? "justify-end" : "justify-start"
+                }`}
             >
               <div
-                className={`max-w-[70%] ${
-                  message.sender === "me" ? "order-2" : "order-1"
-                }`}
+                className={`max-w-[70%] ${message.sender === "me" ? "order-2" : "order-1"
+                  }`}
               >
                 <div
-                  className={`rounded-2xl px-4 py-2 ${
-                    message.sender === "me"
-                      ? "bg-blue-600 text-white"
-                      : "bg-white border border-gray-200"
-                  }`}
+                  className={`rounded-2xl px-4 py-2 ${message.sender === "me"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white border border-gray-200"
+                    }`}
                 >
                   <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                  
+
                   {/* Translation shown based on showTranslation state */}
                   {showTranslation && (
                     <p
-                      className={`text-xs mt-2 pt-2 border-t ${
-                        message.sender === "me"
-                          ? "border-blue-400 text-blue-100"
-                          : "border-gray-200 text-gray-600"
-                      }`}
+                      className={`text-xs mt-2 pt-2 border-t ${message.sender === "me"
+                        ? "border-blue-400 text-blue-100"
+                        : "border-gray-200 text-gray-600"
+                        }`}
                     >
                       {message.translatedText}
                     </p>
@@ -854,18 +849,17 @@ export function ChatPage() {
                       {message.sender === "me" ? "分析中..." : "Đang phân tích..."}
                     </div>
                   )}
-                  
+
                   {/* Attachments */}
                   {message.attachments && message.attachments.length > 0 && (
                     <div className="mt-2 space-y-2">
                       {message.attachments.map((attachment) => (
                         <div
                           key={attachment.id}
-                          className={`rounded-lg overflow-hidden ${
-                            message.sender === "me"
-                              ? "bg-blue-700"
-                              : "bg-gray-100"
-                          }`}
+                          className={`rounded-lg overflow-hidden ${message.sender === "me"
+                            ? "bg-blue-700"
+                            : "bg-gray-100"
+                            }`}
                         >
                           {attachment.type.startsWith("image/") ? (
                             <img
@@ -876,11 +870,10 @@ export function ChatPage() {
                             />
                           ) : (
                             <div
-                              className={`flex items-center gap-2 p-2 cursor-pointer ${
-                                message.sender === "me"
-                                  ? "hover:bg-blue-800"
-                                  : "hover:bg-gray-200"
-                              }`}
+                              className={`flex items-center gap-2 p-2 cursor-pointer ${message.sender === "me"
+                                ? "hover:bg-blue-800"
+                                : "hover:bg-gray-200"
+                                }`}
                               onClick={() => window.open(attachment.url, "_blank")}
                             >
                               <div className="shrink-0">
@@ -906,17 +899,15 @@ export function ChatPage() {
                 {/* Action buttons */}
                 <div className="flex items-center gap-2 mt-1 px-2">
                   <span
-                    className={`text-xs text-gray-500 ${
-                      message.sender === "me" ? "order-2" : "order-1"
-                    }`}
+                    className={`text-xs text-gray-500 ${message.sender === "me" ? "order-2" : "order-1"
+                      }`}
                   >
                     {message.timestamp}
                   </span>
                   {message.intent && (
                     <div
-                      className={`flex gap-1 ${
-                        message.sender === "me" ? "order-1" : "order-2"
-                      }`}
+                      className={`flex gap-1 ${message.sender === "me" ? "order-1" : "order-2"
+                        }`}
                     >
                       <Button
                         variant="ghost"
@@ -970,7 +961,7 @@ export function ChatPage() {
               </div>
             </div>
           )}
-          
+
           {/* File preview before sending */}
           {selectedFiles.length > 0 && (
             <div className="mb-3 flex flex-wrap gap-2">
@@ -1006,7 +997,7 @@ export function ChatPage() {
               ))}
             </div>
           )}
-          
+
           <div className="flex gap-2">
             <Input
               type="text"
