@@ -18,7 +18,8 @@ class CuocHoiThoai extends BaseModel {
           thanhvienhoithoai (
             nguoi_dung (
               ma_nguoi_dung,
-              ten
+              ten,
+              ma_ngon_ngu
             )
           )
         )

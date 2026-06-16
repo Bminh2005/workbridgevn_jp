@@ -2,11 +2,21 @@ const cuocHoiThoai = require('../models/cuocHoiThoai');
 const tinNhan = require('../models/tinnhan');
 const supabase = require('../config/supabase');
 
+// Helper function to convert ma_ngon_ngu to nationality
+const mapLanguageToNationality = (maLangCode) => {
+  const map = {
+    'vn': 'vietnam',
+    'ja': 'japan',
+    'vi': 'vietnam',  // Vietnamese alternative code
+  };
+  return map[maLangCode?.toLowerCase()] || 'vietnam'; // default to vietnam
+};
+
 const getConversations = async (req, res) => {
   try {
     const userId = req.user.id;
     const conversations = await cuocHoiThoai.getByUserId(userId);
-    
+
     const enhancedConversations = await Promise.all(
       conversations.map(async (conv) => {
         // Lấy tin nhắn mới nhất
@@ -33,28 +43,38 @@ const getConversations = async (req, res) => {
           .eq('trang_thai', 'sent');
 
         const translatedText = lastMessageData?.bandich?.[0]?.noi_dung_da_dich || lastMessageData?.ban_dich?.[0]?.noi_dung_da_dich;
-        
+
         // Hiển thị tên cuộc hội thoại động dựa trên người dùng hiện tại
         let dynamicName = conv.ten_cuoc_hoi_thoai;
-        if (dynamicName && dynamicName.startsWith('Đoạn chat ')) {
-          if (conv.thanhvienhoithoai) {
-            const otherMembers = conv.thanhvienhoithoai
-              .filter(tv => tv.nguoi_dung && tv.nguoi_dung.ma_nguoi_dung !== userId)
-              .map(tv => tv.nguoi_dung);
-            
-            if (otherMembers.length > 0) {
-              const otherNames = otherMembers.map(m => m.ten).join(', ');
+        let nationality = 'vietnam'; // default
+
+        if (conv.thanhvienhoithoai) {
+          const otherMembers = conv.thanhvienhoithoai
+            .filter(tv => tv.nguoi_dung && tv.nguoi_dung.ma_nguoi_dung !== userId)
+            .map(tv => tv.nguoi_dung);
+
+          // Lấy ma_ngon_ngu từ người dùng khác trong cuộc hội thoại
+          if (otherMembers.length > 0) {
+            const otherNames = otherMembers.map(m => m.ten).join(', ');
+            if (dynamicName && dynamicName.startsWith('Đoạn chat ')) {
               dynamicName = `Đoạn chat cùng với ${otherNames}`;
+            }
+
+            // Lấy ma_ngon_ngu từ thành viên đầu tiên khác
+            const firstOtherMember = otherMembers[0];
+            if (firstOtherMember?.ma_ngon_ngu) {
+              nationality = mapLanguageToNationality(firstOtherMember.ma_ngon_ngu);
             }
           }
         }
-        
+
         return {
           ...conv,
           ten_cuoc_hoi_thoai: dynamicName,
           lastMessage: lastMessageData ? (translatedText || lastMessageData.noi_dung) : null,
           lastMessageTime: lastMessageData ? lastMessageData.time : conv.ngay_tao,
-          unreadCount: unreadCount || 0
+          unreadCount: unreadCount || 0,
+          nationality: nationality
         };
       })
     );
@@ -73,7 +93,7 @@ const getMessages = async (req, res) => {
   try {
     const { roomId } = req.params;
     const userId = req.user.id;
-    
+
     // Cập nhật trạng thái tin nhắn thành 'read' (đã đọc)
     await supabase
       .from('tinnhan')
@@ -101,13 +121,13 @@ const getUsers = async (req, res) => {
       .neq('ma_nguoi_dung', myId); // loại bản thân ra
 
     if (error) throw error;
-    
+
     // Xử lý NULL ma_ngon_ngu - mặc định là 'vi' (Tiếng Việt)
     const processedData = data.map(user => ({
       ...user,
       ma_ngon_ngu: user.ma_ngon_ngu || 'vi'
     }));
-    
+
     res.json(processedData);
   } catch (err) {
     console.error('Lỗi lấy danh sách user:', err);
@@ -127,14 +147,14 @@ const createConversation = async (req, res) => {
     if (danhSachMaNguoiDung && Array.isArray(danhSachMaNguoiDung)) {
       // Chat nhóm
       members = [myId, ...danhSachMaNguoiDung];
-      
+
       // Nếu không gửi tên cuộc hội thoại từ frontend, tự động tạo tên dựa vào các thành viên
       if (!nameOfConversation) {
         const { data: users, error: userError } = await supabase
           .from('nguoi_dung')
           .select('ten')
           .in('ma_nguoi_dung', danhSachMaNguoiDung);
-        
+
         if (!userError && users && users.length > 0) {
           const names = users.map(u => u.ten).join(', ');
           nameOfConversation = `Đoạn chat cùng với ${names}`;
@@ -145,7 +165,7 @@ const createConversation = async (req, res) => {
     } else if (maNguoiDungKia) {
       // Chat 1-1
       members = [myId, maNguoiDungKia];
-      
+
       if (!nameOfConversation) {
         // Lấy tên của người kia để đặt tên hội thoại mặc định
         const { data: userKia, error: userError } = await supabase
@@ -153,7 +173,7 @@ const createConversation = async (req, res) => {
           .select('ten')
           .eq('ma_nguoi_dung', maNguoiDungKia)
           .single();
-        
+
         if (!userError && userKia) {
           nameOfConversation = `Đoạn chat cùng với ${userKia.ten}`;
         } else {

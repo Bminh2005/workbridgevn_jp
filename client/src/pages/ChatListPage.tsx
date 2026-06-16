@@ -30,12 +30,12 @@ interface Contact {
 export function ChatListPage() {
   const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   const formatConversationName = (name: string) => {
     if (!name) return "";
     const prefixJa = "会話：";
     const prefixVi = "Đoạn chat cùng với ";
-    
+
     if (name.startsWith(prefixJa)) {
       const members = name.substring(prefixJa.length);
       return (
@@ -75,7 +75,7 @@ export function ChatListPage() {
             lastMessage: conv.lastMessage || t("まだメッセージがありません", "Chưa có tin nhắn"),
             lastMessageTime: conv.lastMessageTime || conv.ngay_tao,
             unreadCount: conv.unreadCount || 0,
-            nationality: "vietnam", // Mặc định vì backend chưa trả về nationality của partner
+            nationality: conv.nationality || "vietnam",
             isOnline: false,
           }));
 
@@ -181,8 +181,8 @@ export function ChatListPage() {
                     <span className="text-xs text-gray-500 whitespace-nowrap ml-2">
                       {contact.lastMessageTime
                         ? formatDistanceToNow(new Date(contact.lastMessageTime), {
-                            locale: language === "ja" ? ja : vi,
-                          }) + (language === "ja" ? "前" : " trước")
+                          locale: language === "ja" ? ja : vi,
+                        }) + (language === "ja" ? "前" : " trước")
                         : ""}
                     </span>
                   </div>
